@@ -148,6 +148,9 @@
   }
 } 
 
+/// Rounds a number/array/matrix to a given number of decimal places
+#let round(a, digits: 8) = apply(a, calc.round.with(digits: digits))
+
 /// Absolute value of a number/array/matrix
 #let abs(a)= apply(a, calc.abs)
 
@@ -209,7 +212,80 @@
   a.map(a_row => bt.map(b_col => dot(a_row,b_col)))
 }
 
+/// Returns the dimension of the given matrix as `(m, n)`
+/// - m (matrix): The matrix
+/// -> array
+#let dim(m) = {
+  return (m.len(), if m.len() > 0 { m.at(0).len() } else { 0 })
+}
 
+/// Create a (square) identity matrix with dimensions $"size" times "size"$
+///
+/// - size (int): Size of the matrix
+/// -> matrix
+#let identity(size) = {
+  assert(size >= 1, message: "size must be at least 1")
+  return ().at(size - 1, default:
+    range(0, size).map(j => range(0, size).map(k => {
+      if j == k { 1.0 } else { 0.0 }
+    })))
+}
+
+
+/// Calculates the inverse matrix of any size. May require manual rounding to avoid floating point errors. \
+/// *Note*: On uninversible matrix ($"det"("matrix") = 0$) returns undefined values, does not error out.
+///
+/// - matrix (matrix): The matrix to inverse.
+/// -> matrix
+#let inverse(matrix) = {
+  let n = {
+    let size = dim(matrix)
+    assert.eq(size.first(), size.last(), message: "matrix must be square to perform inversion!")
+    size.first()
+  }
+
+  let N = range(n)
+  let inverted = identity(n)
+  let p
+  
+  for j in N {
+    for i in range(j, n) {
+      if matrix.at(i).at(j) != 0 {
+        // 1. Properly swap rows using temporary variables
+        let temp_m = matrix.at(j)
+        matrix.at(j) = matrix.at(i)
+        matrix.at(i) = temp_m
+
+        let temp_inv = inverted.at(j)
+        inverted.at(j) = inverted.at(i)
+        inverted.at(i) = temp_inv
+
+        // Normalize the pivot row
+        p = 1 / matrix.at(j).at(j)
+        for k in N {
+          matrix.at(j).at(k) *= p
+          inverted.at(j).at(k) *= p
+        }
+
+        // Eliminate the column in other rows
+        for L in N {
+          if L != j {
+            p = -matrix.at(L).at(j)
+            for k in N {
+              matrix.at(L).at(k) += p * matrix.at(j).at(k)
+              inverted.at(L).at(k) += p * inverted.at(j).at(k)
+            }
+          }
+        }
+        
+        // 2. CRITICAL: Stop searching for a pivot in this column!
+        break 
+      }
+    }
+  }
+
+  return inverted
+}
 
 /// Matrix determinant
 #let det(m) = {

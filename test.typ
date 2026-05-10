@@ -287,6 +287,35 @@ $ M = #M \ N =#N \ u = #u \ v = #v \ a = #a \ b = #b $
   
   #nt.transpose(c(1,2))
 
+  == inverse
+
+  #let test-inverse(symbol, matrix, target: none) = {
+    $
+      #symbol &dot #symbol^(-1) &&= "id"_2 \
+      #nt.p(matrix) &dot #nt.p(nt.round(nt.inverse(matrix))) &&= #nt.p(nt.round(nt.matmul(matrix, nt.inverse(matrix)))) \
+    $
+    if target != none {
+      assert(nt.all-eq(nt.round(nt.matmul(matrix, nt.inverse(matrix))), target))
+    }
+  }
+
+  #test-inverse("M", M, target: nt.identity(2))
+  #test-inverse("N", N, target: nt.identity(2))
+
+  bigger matrix:
+
+  #test-inverse("L", ((1, 4, 2), (2, 8, 6), (6, 4, 1)), target: nt.identity(3))
+
+  inverse of a Matrix $K$ where $det(K) = 0$ is undefined behavior:
+
+  #test-inverse("K", ((0, 2, 2), (2, 2, 2), (2, 2, 2)))
+
+  == identity
+
+  #nt.p(nt.identity(1))
+
+  #nt.p(nt.identity(4))
+  
   == det
 
   #let test-det(M, value) = {

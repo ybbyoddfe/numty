@@ -44,6 +44,7 @@ A library for performing mathematical operations on n-dimensional matrices, vect
 #nt.transpose(m)  // transposition
 #nt.matmul(m,m) //  matrix multipliation
 #nt.matmul(c(1,2), r(2,3)) //  colum vector times row vector multiplication.
+#nt.inverse(m) // inverse of a matrix
 #np.trace(m) // trace
 #np.det(m) // nxn determinant 
  
@@ -123,7 +124,8 @@ Functions for creating equally spaced indexes in linear and logspace, usefull fo
 ### Matrix
 
 ```typ
-#nt.matmul(m,m)              // matrix multiplication
+#nt.matmul(m,m)               // matrix multiplication
+#nt.inverse((1,3), (3,4))     // inverse of a matrix
 #nt.det(((1,3), (3,4)))       // nxn matrix determinant
 #nt.trace(((1,3), (3,4)))     // trace of square matrix
 #nt.transpose(((1,3), (3,4))) // matrix transposition
