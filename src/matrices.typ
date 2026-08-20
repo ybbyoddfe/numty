@@ -113,6 +113,22 @@
   mult(sign, curr)
 }
 
+/// Returns a matrix of given shape filled with a specified value.
+///
+/// ```example
+/// #nt.full((2, 3), 5)
+/// ```
+///
+/// -> array
+#let full(shape, value) = if shape.len() == 1 {
+  (value,) * shape.at(0)
+} else {
+  range(shape.at(0)).map(i => full(shape.slice(1), value))
+}
+
+#let zeros = full.with(value: 0)
+#let ones = full.with(value: 1)
+
 /// Returns matrix with ones on the k-th diagonal. Mimics `numpy.eye`.
 ///
 /// ```example
